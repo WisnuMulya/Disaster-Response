@@ -1,36 +1,43 @@
 import json
 import plotly
 import pandas as pd
+import sys
+import re
 
+import nltk
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+nltk.download(['stopwords'])
 
 from flask import Flask
 from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
-from sklearn.externals import joblib
+import joblib
 from sqlalchemy import create_engine
 
+# importing custom estimator and tokenize function from models/train_classifier.py
+sys.path.append('../')
+from models.train_classifier import tokenize, StartingVerbExtractor
 
 app = Flask(__name__)
 
-def tokenize(text):
-    tokens = word_tokenize(text)
-    lemmatizer = WordNetLemmatizer()
+# Try to open database and model from inside the app folder
+try:
+    # load data
+    engine = create_engine('sqlite:///../data/DisasterResponse.db')
+    df = pd.read_sql_table('messages', engine)
 
-    clean_tokens = []
-    for tok in tokens:
-        clean_tok = lemmatizer.lemmatize(tok).lower().strip()
-        clean_tokens.append(clean_tok)
+    # load model
+    model = joblib.load("../models/DisasterResponseModel.pkl")
+# When failed, this file is called as a module from the root folder
+except:
+    # load data
+    engine = create_engine('sqlite:///./data/DisasterResponse.db')
+    df = pd.read_sql_table('messages', engine)
 
-    return clean_tokens
-
-# load data
-engine = create_engine('sqlite:///../data/DisasterResponse.db')
-df = pd.read_sql_table('messages', engine)
-
-# load model
-model = joblib.load("../models/DisasterResponseModel.pkl")
+    # load model
+    model = joblib.load("./models/DisasterResponseModel.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
@@ -42,6 +49,8 @@ def index():
     # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
+    categories_counts = df[df.columns[4:]].sum().sort_values(ascending=False)
+    categories_names = list(categories_counts.index)
     
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
@@ -61,6 +70,25 @@ def index():
                 },
                 'xaxis': {
                     'title': "Genre"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=categories_names,
+                    y=categories_counts,
+                    marker_color='lightsalmon'
+                )
+            ],
+            'layout': {
+                'title': 'Distribution of Message Categories',
+                'yaxis': {
+                    'title': 'Count'
+                },
+                'xaxis': {
+                    'title': 'Categories',
+                    'tickangle': -40
                 }
             }
         }

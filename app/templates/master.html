@@ -54,13 +54,19 @@
 
 <div class="container">
     {% block content %}
-        <div class="page-header">
-            <h1 class="text-center">Overview of Training Dataset</h1>
+    <div class="page-header row">
+        <div class="col-xs-12">
+	    <h1 class="text-center">Overview of Training Dataset</h1>
         </div>
+    </div>
     {% endblock %}
 
     {% for id in ids %}
-        <div id="{{id}}"></div>
+    <div class="row">
+        <div class="col-xs-12">
+	    <div id="{{id}}"></div>
+        </div>
+    </div>
     {% endfor %}
 </div>
 
