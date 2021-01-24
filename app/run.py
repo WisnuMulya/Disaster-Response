@@ -1,6 +1,7 @@
 import json
 import plotly
 import pandas as pd
+import sys
 import re
 
 import nltk
@@ -15,6 +16,9 @@ from plotly.graph_objs import Bar
 import joblib
 from sqlalchemy import create_engine
 
+# importing custom estimator from models/train_classifier.py
+sys.path.append('../')
+from models.train_classifier import StartingVerbExtractor
 
 app = Flask(__name__)
 
