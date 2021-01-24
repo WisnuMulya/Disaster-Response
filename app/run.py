@@ -16,44 +16,11 @@ from plotly.graph_objs import Bar
 import joblib
 from sqlalchemy import create_engine
 
-# importing custom estimator from models/train_classifier.py
+# importing custom estimator and tokenize function from models/train_classifier.py
 sys.path.append('../')
-from models.train_classifier import StartingVerbExtractor
+from models.train_classifier import tokenize, StartingVerbExtractor
 
 app = Flask(__name__)
-
-def tokenize(text):
-    """
-    Tokenizes, lemmatizes, and normalizes text.
-    INPUT:
-    text (str) - text to be procesed
-    OUTPUT:
-    clean_tokens (list of str) - list of clean tokens
-    """
-    # Replace URLs with 'urlplaceholder' string
-    url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
-    detected_urls = re.findall(url_regex, text)
-    for url in detected_urls:
-        text = text.replace(url, 'urlplaceholder')
-
-    # Filter to include only alphabets or numbers and normalize
-    text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower())
-    
-    # Tokenize text
-    tokens = word_tokenize(text)
-
-    # Instantiate lemmatizer
-    lemmatizer = WordNetLemmatizer()
-
-    # Clean tokens: lemmatize, filter stopwords
-    stop_words = stopwords.words("english")
-    clean_tokens = []
-    for tok in tokens:
-        if tok not in stop_words:
-            clean_tok = lemmatizer.lemmatize(tok).strip()
-            clean_tokens.append(clean_tok)
-
-    return clean_tokens
 
 # load data
 engine = create_engine('sqlite:///../data/DisasterResponse.db')
