@@ -22,12 +22,22 @@ from models.train_classifier import tokenize, StartingVerbExtractor
 
 app = Flask(__name__)
 
-# load data
-engine = create_engine('sqlite:///../data/DisasterResponse.db')
-df = pd.read_sql_table('messages', engine)
+# Try to open database and model from inside the app folder
+try:
+    # load data
+    engine = create_engine('sqlite:///../data/DisasterResponse.db')
+    df = pd.read_sql_table('messages', engine)
 
-# load model
-model = joblib.load("../models/DisasterResponseModel.pkl")
+    # load model
+    model = joblib.load("../models/DisasterResponseModel.pkl")
+# When failed, this file is called as a module from the root folder
+except:
+    # load data
+    engine = create_engine('sqlite:///./data/DisasterResponse.db')
+    df = pd.read_sql_table('messages', engine)
+
+    # load model
+    model = joblib.load("./models/DisasterResponseModel.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
