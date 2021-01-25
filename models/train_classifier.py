@@ -114,9 +114,11 @@ class StartingVerbExtractor(BaseEstimator, TransformerMixin):
         return pd.DataFrame(X_tagged)
 
 
-def build_model():
+def build_model(grid_search=False):
     """
     Returns a model which has been pipelined with multiple estimators.
+    INPUT:
+    grid_search (bool) - run grid search if True
     """
     # Pipeline estimators
     pipeline = Pipeline([
@@ -127,21 +129,23 @@ def build_model():
             ])),
             ('starting_verb', StartingVerbExtractor())
         ], verbose=1)),
-        ('clf', MultiOutputClassifier(RandomForestClassifier(random_state=42, verbose=1)))
-    ], verbose=True)
-    
-    # Search for the best parameters of the pipeline
-    # NOTE: uncomment parameters you'd like to optimize on
-    # NOTE: depending on computing capacity, the GridSearchCV might take a long time
-    parameters = {
-#        'vect__ngram_range': ((1, 1), (1, 2)),
-#        'vect__max_df': (0.5, 0.75, 1.0),
-#        'features__text_pipeline__vect__max_features': (None, 5000, 10000),
-#        'features__text_pipeline__tfidf__use_idf': (True, False),
-        'clf__estimator__n_estimators': [100, 200],
-#        'clf__estimator__min_samples_split': [2, 3, 4],
-    }
-    model = GridSearchCV(pipeline, parameters)
+        ('clf', MultiOutputClassifier(
+            RandomForestClassifier(random_state=42, verbose=1, n_estimators=200, n_jobs=2)))
+    ], verbose=True) # n_estimators=200 found from prior GridSearchCV() best params
+
+    if not grid_search:
+        model = pipeline
+    else:
+        # Search for the best parameters of the pipeline
+        parameters = {
+            'vect__ngram_range': ((1, 1), (1, 2)),
+            'vect__max_df': (0.5, 0.75, 1.0),
+            'features__text_pipeline__vect__max_features': (None, 5000, 10000),
+            'features__text_pipeline__tfidf__use_idf': (True, False),
+            'clf__estimator__n_estimators': [100, 200],
+            'clf__estimator__min_samples_split': [2, 3, 4],
+        }
+        model = GridSearchCV(pipeline, parameters)
     
     return model
 
@@ -161,7 +165,11 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
     print('-----------------------------------------------------')
     print('Accuracy: {}'.format(accuracy))
-    print('Best Parameters: {}'.format(model.best_params_))
+    # Print best parameters when model is a result of GridSearchCV()
+    try:
+        print('Best Parameters: {}'.format(model.best_params_))
+    except:
+        pass
     print('-----------------------------------------------------')
 
     # Print F1 scores
@@ -195,7 +203,7 @@ def main():
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
         
         print('Building model...')
-        model = build_model()
+        model = build_model() # pass argument 'grid_search=True' to search for best parameters
         
         print('Training model...')
         model.fit(X_train, Y_train)
