@@ -6,8 +6,6 @@ could be accessed here: [https://appen.com/datasets/combined-disaster-response-d
 
 A view of the sourcecode could be accessed on GitHub here: [https://github.com/WisnuMulya/Disaster-Response-Project](https://github.com/WisnuMulya/Disaster-Response-Project).
 
-The live web app could be accessed here: [https://wpm-disaster-response.herokuapp.com/](https://wpm-disaster-response.herokuapp.com/).
-
 ## Installation ##
 1. Run the following commands in the project's root directory to set up your database and model.
 
@@ -15,6 +13,8 @@ The live web app could be accessed here: [https://wpm-disaster-response.herokuap
         `python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db`
     - To run ML pipeline that trains classifier and saves
         `python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl`
+		To run GridSearch, pass the argument of `grid_search=True` on `line 206` under `train_classifier.py`.
+		
 
 2. Run the following command in the app's directory to run your web app.
     `python run.py`
@@ -67,7 +67,7 @@ The live web app could be accessed here: [https://wpm-disaster-response.herokuap
   ...
   ```
   The result on the second model with GridSearchCV() utilized to search for the
-  best `clf__estimator__n_estimators`:
+  best `clf__estimator__n_estimators` only:
   ```shell
   ...
   ...
@@ -106,7 +106,11 @@ The live web app could be accessed here: [https://wpm-disaster-response.herokuap
   ...
   ```
   The model achieved accuracy of 94.89%, better than the one with the default
-  hyperparameters.
+  hyperparameters, with the beset parameter of `clf__estimator__n_estimators==200`.
+  
+  Both models trained are not included in this repo due to the too big of a file
+  size. You need to run the run the ML pipeline as instructed above to obtain it
+  and utilize it in the web app.
 
 ## File Description ##
 * The ETL pipeline and the database are under the `data` directory.
