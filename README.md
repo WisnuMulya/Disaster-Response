@@ -28,6 +28,12 @@ A view of the sourcecode could be accessed on GitHub here: [https://github.com/W
   value of `2` into `1`, since all rows with `related` value of `0` and `2` have
   `0` value in the other categories, while the rows with `related` value of `1`
   vary. Credit to Dmitry L in this Udacity Knowledge question: [https://knowledge.udacity.com/questions/64417](https://knowledge.udacity.com/questions/64417).
+  
+  Also, there is a case of unbalance data, of which the `child_alone` category has
+  only the value of `0`: no row has other`child_alone` value. It might be appropriate
+  to remove this category altogether, since it adds no information to the model and
+  there is a lack of information on how to impute other values to it. I finally
+  did nothing and left the column as is without changing anything or removing the column.
 * On the model  
   The first model created without utilizing `GridSearchCV()` for hyperparameters
   searching  achieved 94.79% accuracy:
