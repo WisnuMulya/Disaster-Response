@@ -44,7 +44,9 @@ except:
 @app.route('/')
 @app.route('/index')
 def index():
-    
+    """
+    Build homepage and pass data for visualization.
+    """
     # extract data needed for visuals
     # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
@@ -105,6 +107,10 @@ def index():
 # web page that handles user query and displays model results
 @app.route('/go')
 def go():
+    """
+    Build a page to output classes of a message by passing the
+    result of the model predition.
+    """
     # save user input in query
     query = request.args.get('query', '') 
 
@@ -121,6 +127,9 @@ def go():
 
 
 def main():
+    """
+    Run the webapp on a local host.
+    """
     app.run(host='0.0.0.0', port=3001, debug=True)
 
 
