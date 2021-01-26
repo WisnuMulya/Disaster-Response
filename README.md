@@ -109,8 +109,8 @@ A view of the sourcecode could be accessed on GitHub here: [https://github.com/W
   hyperparameters, with the beset parameter of `clf__estimator__n_estimators==200`.
   
   Both models trained are not included in this repo due to the too big of a file
-  size. You need to run the run the ML pipeline as instructed above to obtain it
-  and utilize it in the web app.
+  size. You need to run the ML pipeline as instructed above to obtain it and
+  utilize it in the web app.
 
 ## File Description ##
 * The ETL pipeline and the database are under the `data` directory.
